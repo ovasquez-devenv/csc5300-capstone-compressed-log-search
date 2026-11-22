@@ -1,0 +1,27 @@
+flowchart TB
+  subgraph dataLayer [1. Data layer]
+    logs["Loghub logs: OpenSSH, Linux, Apache"]
+    ingest["ingest.py: lines, sentinel, offsets"]
+    logs --> ingest
+  end
+  subgraph indexLayer [2. Index build layer]
+    sa["suffix_array.py prefix doubling, Week 11"]
+    bwt["bwt.py and wavelet.py, Week 13"]
+    fm["FM-index plus sampled suffix array"]
+    sa --> bwt --> fm
+  end
+  subgraph queryLayer [3. Query layer]
+    analyst["Analyst query"]
+    facade["query.py LogSieve facade"]
+    paths["FM count and locate, baselines, Count-Min sketch"]
+    analyst --> facade --> paths
+  end
+  subgraph evalLayer [4. Evaluation layer]
+    bench["bench.py seeded repeats"]
+    results["results CSV, environment.json, notebook charts"]
+    tests["tests against the naive scan"]
+    paths --> bench --> results
+    tests --> bench
+  end
+  ingest --> sa
+  fm --> facade

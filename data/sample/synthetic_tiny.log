@@ -1,0 +1,6 @@
+INFO boot sequence started
+ERROR disk quota exceeded on /var
+INFO user ada login from 10.0.0.8
+ERROR disk quota exceeded on /tmp
+WARN failed password for user ada from 10.0.0.8
+INFO user ada logout
