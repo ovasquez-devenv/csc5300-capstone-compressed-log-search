@@ -43,7 +43,7 @@ python -m logsieve.cli bench
 
 `--quick` is a small smoke test of the same code. The full run is meant to finish in a few minutes on a normal Windows PC. It uses `data/raw/SSH.log` when that file is present, and otherwise it uses the committed 2,000 line sample, so the larger prefixes only appear after you download the Loghub archive.
 
-Outputs land in `results/`: `early_benchmarks.csv`, `early_benchmarks_summary.csv`, `space_measurements.csv`, `environment.json`, and the PNG charts. `environment.json` records the Python version, the operating system, the CPU, the RAM, the git commit, and the seed. If you rerun the benchmark on another machine, those files change and the tables in the proposal have to be refreshed from the new run. Every timing and size in the writeup comes from the CSV files this command writes.
+Outputs land in `results/`: `early_benchmarks.csv`, `early_benchmarks_summary.csv`, `space_measurements.csv`, `environment.json`, and the PNG charts. `environment.json` records the Python version, the operating system, the CPU, the RAM, the git commit, and the seed. If you rerun the benchmark on another machine, those files change and the tables in the proposal have to be refreshed from the new run. Every timing and size in the writeup comes from the CSV files this command writes. On the machine recorded for this Week 14 run (CPython 3.12.3, 4 CPUs, 16,780,623,872 bytes of RAM), the 50,000 line OpenSSH prefix builds in a median of 6.24 seconds. An FM-index count on that prefix is faster than the scans and slower than suffix array binary search. The tables are in `analysis/week14_report.md` and in `docs/proposal.pdf`.
 
 ## Notebook
 
