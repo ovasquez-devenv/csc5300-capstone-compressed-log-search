@@ -1,0 +1,59 @@
+digraph LogSieve {
+  graph [
+    rankdir=TB,
+    fontname="DejaVu Sans",
+    fontsize=14,
+    pad=0.15,
+    nodesep=0.15,
+    ranksep=0.28,
+    bgcolor="white"
+  ];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=12, fillcolor="#F4F7FB", color="#243044", margin="0.08,0.05"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#243044"];
+
+  logs [label="Loghub logs\nOpenSSH, Linux, Apache"];
+  ingest [label="ingest.py\nnormalize lines, sentinel,\nline offset table"];
+  sa [label="suffix_array.py\nprefix doubling\nWeek 11", fillcolor="#E7F2E7"];
+  bwt [label="bwt.py + wavelet.py\nBWT, C table, rank\nWeek 13", fillcolor="#E7F2E7"];
+  fm [label="FM-index\nplus sampled suffix array", fillcolor="#FFF4D6"];
+  analyst [label="Analyst query", shape=oval, fillcolor="#FFF4D6"];
+  facade [label="query.py\nLogSieve facade"];
+  paths [label="FM count and locate\nbaselines: naive, KMP,\nstr.find, Aho-Corasick\nCount-Min sketch"];
+  bench [label="bench.py\nseeded repeats\nmedian, IQR, mean, std"];
+  results [label="results CSV\nenvironment.json\nnotebook charts"];
+  tests [label="tests/\nmatch the naive scan"];
+
+  subgraph cluster_data {
+    label="1. Data layer";
+    fontsize=13;
+    color="#8AA0B8";
+    style="rounded";
+    logs; ingest;
+  }
+  subgraph cluster_index {
+    label="2. Index build layer";
+    fontsize=13;
+    color="#8AA0B8";
+    style="rounded";
+    sa; bwt; fm;
+  }
+  subgraph cluster_query {
+    label="3. Query layer";
+    fontsize=13;
+    color="#8AA0B8";
+    style="rounded";
+    analyst; facade; paths;
+  }
+  subgraph cluster_eval {
+    label="4. Evaluation layer";
+    fontsize=13;
+    color="#8AA0B8";
+    style="rounded";
+    bench; results; tests;
+  }
+
+  logs -> ingest -> sa -> bwt -> fm -> facade;
+  analyst -> facade -> paths;
+  paths -> bench -> results;
+  tests -> bench [style=dashed];
+}
