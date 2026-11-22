@@ -73,6 +73,15 @@ QUICK = {
 }
 
 
+def _repo_relative(path: Path, root: Path) -> str:
+    """Path recorded in results, relative to the repo when it lives inside it."""
+
+    try:
+        return path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def repo_root() -> Path:
     """Directory that holds data/sample, whether that is cwd or this repo."""
 
@@ -647,7 +656,7 @@ def run_week14(
     out.mkdir(parents=True, exist_ok=True)
     env = capture_environment(root, seed, repeats, quick)
     source = _ensure_openssh(root)
-    env["openssh_source"] = str(source)
+    env["openssh_source"] = _repo_relative(source, root)
     env["line_counts"] = list(config["line_counts"])
     logger.info("benchmark source %s sizes %s repeats %d", source, config["line_counts"], repeats)
 

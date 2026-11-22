@@ -1,12 +1,26 @@
 """Command line build and search."""
 
+import hashlib
 import json
 from pathlib import Path
 
 from logsieve.cli import main
 
+REPO = Path(__file__).resolve().parents[1]
 
-def test_build_and_search(tmp_path: Path, capsys):
+
+def _fingerprint(directory: Path) -> dict[str, str]:
+    found: dict[str, str] = {}
+    if not directory.exists():
+        return found
+    for path in sorted(directory.rglob("*")):
+        if path.is_file():
+            found[str(path.relative_to(directory))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return found
+
+
+def test_build_and_search(tmp_path: Path, capsys, monkeypatch):
+    monkeypatch.chdir(REPO)
     index = tmp_path / "index.pkl"
     code = main(
         [
@@ -37,13 +51,27 @@ def test_search_without_index(tmp_path: Path, capsys):
 
 
 def test_quick_bench_writes_csv(tmp_path: Path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    # The harness reads sample logs relative to the repo. Point at them.
-    sample = Path("/workspace/data/sample")
-    (tmp_path / "data").mkdir()
-    (tmp_path / "data" / "sample").symlink_to(sample)
-    code = main(["bench", "--quick", "--repeats", "2", "--seed", "5300"])
+    sample = REPO / "data" / "sample" / "OpenSSH_2k.log"
+    assert sample.is_file()
+    out = tmp_path / "bench-out"
+    before = _fingerprint(REPO / "results")
+    monkeypatch.chdir(REPO)
+    code = main(
+        [
+            "bench",
+            "--quick",
+            "--repeats",
+            "2",
+            "--seed",
+            "5300",
+            "--out",
+            str(out),
+        ]
+    )
     assert code == 0
-    env = json.loads((tmp_path / "results" / "environment.json").read_text())
+    assert _fingerprint(REPO / "results") == before
+    env = json.loads((out / "environment.json").read_text())
     assert env["seed"] == 5300
-    assert (tmp_path / "results" / "early_benchmarks.csv").exists()
+    assert not Path(env["openssh_source"]).is_absolute()
+    assert (out / "early_benchmarks.csv").is_file()
+    assert not (REPO / "results" / "bench-out").exists()

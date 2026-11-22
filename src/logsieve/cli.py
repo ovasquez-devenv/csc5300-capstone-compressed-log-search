@@ -56,6 +56,13 @@ def main(argv: list[str] | None = None) -> int:
     bench.add_argument("--seed", type=int, default=5300)
     bench.add_argument("--repeats", type=int, default=5)
     bench.add_argument(
+        "--out",
+        "--output-dir",
+        dest="output_dir",
+        default="results",
+        help="directory for the CSV files, charts, and environment.json (default: results/)",
+    )
+    bench.add_argument(
         "--quick",
         action="store_true",
         help="smaller sizes, for a smoke test of the harness",
@@ -123,7 +130,12 @@ def _search(args: argparse.Namespace) -> int:
 def _bench(args: argparse.Namespace) -> int:
     from logsieve.bench import run_week14
 
-    summary = run_week14(seed=args.seed, repeats=args.repeats, quick=args.quick)
+    summary = run_week14(
+        seed=args.seed,
+        repeats=args.repeats,
+        quick=args.quick,
+        output_dir=args.output_dir,
+    )
     print("wrote %s" % summary["timing_csv"])
     print("wrote %s" % summary["environment_json"])
     for chart in summary["charts"]:
