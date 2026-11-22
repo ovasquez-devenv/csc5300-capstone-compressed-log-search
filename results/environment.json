@@ -19,7 +19,7 @@
   "gc_disabled_during_timed_sections": true,
   "quick": false,
   "clock": "time.perf_counter",
-  "openssh_source": "/workspace/data/raw/SSH.log",
+  "openssh_source": "data/raw/SSH.log",
   "line_counts": [
     2000,
     10000,
