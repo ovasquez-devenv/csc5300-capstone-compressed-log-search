@@ -8,7 +8,7 @@ The Week 14 launch is the proposal, this prototype, the tests, and a first bench
 
 ## Install
 
-You need Python 3.11 or newer. I will rerun this on Python 3.14. From the repository root on macOS or Linux:
+You need Python 3.11 or newer. The benchmark in `results/` is the run I made on Python 3.14.7. From the repository root on macOS or Linux:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -53,7 +53,7 @@ python -m logsieve.cli bench
 
 `--quick` is a small smoke test of the same code. Pass `--out` (or `--output-dir`) to write somewhere other than `results/`. The full run is meant to finish in a few minutes on a normal Windows PC. If `data/raw/SSH.tar.gz` is already there and `data/raw/SSH.log` is not, the bench unpacks the archive itself. If neither file is present it uses the committed 2,000 line sample, so the larger prefixes only appear after you download the Loghub archive.
 
-Outputs land in `results/`: `early_benchmarks.csv`, `early_benchmarks_summary.csv`, `space_measurements.csv`, `environment.json`, and the PNG charts. `environment.json` records the Python version, the operating system, the CPU, the RAM, the git commit, and the seed. If you rerun the benchmark on another machine, those files change and the tables in the proposal must be refreshed from the new run. Every timing and size in the writeup comes from the CSV files this command writes. On the machine recorded for this Week 14 run (CPython 3.12.3, 4 CPUs, 16,780,623,872 bytes of RAM), the 50,000 line OpenSSH prefix builds in a median of 6.24 seconds. An FM-index count on that prefix is faster than the scans and slower than suffix array binary search. The tables are in `analysis/week14_report.md` and in `docs/proposal.pdf`.
+Outputs land in `results/`: `early_benchmarks.csv`, `early_benchmarks_summary.csv`, `space_measurements.csv`, `environment.json`, and the PNG charts. `environment.json` records the Python version, the operating system, the CPU, the RAM, the git commit, and the seed. If you rerun the benchmark on another machine, those files change and the tables in the proposal must be refreshed from the new run. Every timing and size in the writeup comes from the CSV files this command writes. The Week 14 numbers in this repository are from my Windows 11 PC, hostname ODIS_LLC, recorded in `results/environment.json`: CPython 3.14.7, 12 logical CPUs, processor string "AMD64 Family 26 Model 104 Stepping 0, AuthenticAMD", numpy 2.5.5. That file does not record a RAM total. On that run the 50,000 line OpenSSH prefix builds in a median of 7.855 seconds. An FM-index count on that prefix is faster than the scans at the median across patterns, and slower than suffix array binary search. The tables are in `analysis/week14_report.md` and in `docs/proposal.pdf`.
 
 ## Notebook
 

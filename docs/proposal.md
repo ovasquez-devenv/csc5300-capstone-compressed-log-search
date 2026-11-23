@@ -11,7 +11,7 @@ Concordia University Texas<br>
 https://github.com/ovasquez-devenv/csc5300-capstone-compressed-log-search
 </p>
 
-<p><span class="abstract-label">Abstract.</span> Security logs are long, repetitive, and searched for pieces of strings: part of an address, a user name, an error token, a fragment of an attack signature. A word index misses those pieces, and reading the file from the start for every question grows with the file. LogSieve is my compressed full text index for that search. It builds a Ferragina-Manzini index (FM-index): the Burrows-Wheeler Transform (BWT) of the log, stored in a wavelet tree, plus a sampled suffix array so a hit can be mapped back to a line. I compare count time with a plain suffix array, Knuth-Morris-Pratt (KMP), Aho-Corasick, and a naive scan. The text is the OpenSSH log from Loghub. The Week 14 prefixes are 2,000, 10,000, and 50,000 lines, timed five times on one Linux virtual machine. The largest index builds in a median of 6.24 seconds. A count on that index is faster than the scans and slower than binary search on the suffix array. The index is smaller than the suffix array, and most of that gap is Python object cost. Later weeks extend the same measurements to longer files.</p>
+<p><span class="abstract-label">Abstract.</span> Security logs are long, repetitive, and searched for pieces of strings: part of an address, a user name, an error token, a fragment of an attack signature. A word index misses those pieces, and reading the file from the start for every question grows with the file. LogSieve is my compressed full text index for that search. It builds a Ferragina-Manzini index (FM-index): the Burrows-Wheeler Transform (BWT) of the log, stored in a wavelet tree, plus a sampled suffix array so a hit can be mapped back to a line. I compare count time with a plain suffix array, Knuth-Morris-Pratt (KMP), Aho-Corasick, and a naive scan. The text is the OpenSSH log from Loghub. The Week 14 prefixes are 2,000, 10,000, and 50,000 lines, timed five times on my Windows 11 PC with Python 3.14.7. The largest index builds in a median of 7.855 seconds. A count on that index is faster than the scans and slower than binary search on the suffix array. The index is smaller than the suffix array, and most of that gap is Python object cost. Later weeks extend the same measurements to longer files.</p>
 
 </div>
 
@@ -114,7 +114,7 @@ The data layer is Loghub. Ingest normalizes lines, appends the sentinel, and bui
 
 The plan follows Amakobe (2026, sec. 14.3). Before collecting numbers I fixed the question, the competitors, the inputs, the correctness oracle, and the statistics. The oracle is the naive scan. The statistics are the mean, the sample standard deviation, the median, and the interquartile range over five trials after one warmup. The garbage collector is disabled during a timed call and run once before the trials. The seed is 5300. Pattern draws and the sketch multipliers use that seed. Wall time is `time.perf_counter`.
 
-The machine that produced every number in this section is the one recorded in `results/environment.json` at commit `ec2004087526eb2ac9304ad10a45a65703b96240`. It is CPython 3.12.3 on Linux 6.12.113+, x86_64. The processor string from the kernel is "Intel(R) Xeon(R) Processor", with 4 CPUs. MemTotal is 16,780,623,872 bytes. I will rerun the same harness on my own PC before the final submission. If those numbers move, the tables move with them. These are the Week 14 numbers, and they are preliminary in the sense that the prefixes stop at 50,000 lines.
+The machine that produced every number in this section is the one recorded in `results/environment.json`. I ran the harness on my Windows 11 PC, hostname ODIS_LLC, at commit `b256467a0834afc261c2eda2dabeece74c9efb43`. That file marks the working tree dirty at the start of the run. It is CPython 3.14.7. The platform string is Windows-11-10.0.26200-SP0. The processor string is "AMD64 Family 26 Model 104 Stepping 0, AuthenticAMD", with 12 logical CPUs. numpy is 2.5.5. The file does not record a RAM total. These are the Week 14 numbers from that PC, and the prefixes still stop at 50,000 lines.
 
 The text is the OpenSSH log from Loghub (Zhu et al. 2023), unpacked from the Zenodo archive `SSH.tar.gz`. The harness read the first 2,000, 10,000, and 50,000 lines. Those prefixes are 223,218 bytes, 1,098,049 bytes, and 5,561,038 bytes, sentinel included. A synthetic control of the same body length, drawn from a 41 symbol alphabet, is measured for space only. The Linux 2,000 line sample is a second real log for the space table. The query workload is random slices of length 4, 8, 16, 32, and 64, the analyst strings "Failed password", "Invalid user", "authentication failure", "error", and "Accepted", the first IPv4 address in the prefix and its three octet prefix, and the absent string "zzqxvnotpresent".
 
@@ -122,11 +122,11 @@ Table 3. FM-index build, five trials. Times are seconds. The suffix array phase 
 
 | Lines | Text bytes | Mean total | Std total | Median total | IQR total | Median suffix array |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2,000 | 223,218 | 0.170 | 0.00118 | 0.170 | 0.000644 | 0.145 |
-| 10,000 | 1,098,049 | 0.962 | 0.0325 | 0.949 | 0.0461 | 0.831 |
-| 50,000 | 5,561,038 | 6.25 | 0.0812 | 6.24 | 0.0299 | 5.52 |
+| 2,000 | 223,218 | 0.178 | 0.00140 | 0.178 | 0.00173 | 0.146 |
+| 10,000 | 1,098,049 | 1.130 | 0.0794 | 1.101 | 0.0811 | 0.950 |
+| 50,000 | 5,561,038 | 7.948 | 0.205 | 7.855 | 0.329 | 7.106 |
 
-On the largest prefix the BWT median is 0.0299 seconds, the wavelet median is 0.191 seconds, and the sample construction median is 0.471 seconds. The fitted slope of log median total build time against log text bytes, across these three sizes, is 1.121. That is a bit above linear, which fits a doubling sort that pays an extra log factor, and three points do not prove the asymptotics. The raw fit is in `environment.json`.
+On the largest prefix the BWT median is 0.0339 seconds, the wavelet median is 0.251 seconds, and the sample construction median is 0.453 seconds. The fitted slope of log median total build time against log text bytes, across these three sizes, is 1.179. That is a bit above linear, which fits a doubling sort that pays an extra log factor, and three points do not prove the asymptotics. The raw fit is in `environment.json`.
 
 Table 4. Space on the 50,000 line OpenSSH prefix, sample rate 16. Bytes are measured allocations, not a formula.
 
@@ -148,19 +148,19 @@ Table 5. Count latency at 50,000 lines. Each entry is the median, across the wor
 
 | Method | Milliseconds |
 | --- | --- |
-| Suffix array binary search | 0.0125 |
-| FM-index count | 0.147 |
-| str.find loop | 2.35 |
-| Naive scan | 36.8 |
-| KMP | 133 |
+| Suffix array binary search | 0.0092 |
+| FM-index count | 0.103 |
+| str.find loop | 1.957 |
+| Naive scan | 30.44 |
+| KMP | 236.6 |
 
-The ordering on this prefix is suffix array, then FM-index, then `str.find`, then the naive scan, then KMP. KMP is a pure Python loop over every byte. The naive scan and `str.find` do the heavy skipping in C. A slow KMP time here is partly the interpreter. I will not treat it as a property of the 1977 algorithm. The FM-index count does not depend on how many hits there are, which is why "Failed password", with 15,385 hits on this prefix, still has an FM-index median of 0.193 milliseconds, close to the 0.147 millisecond figure in Table 5.
+That order is the median across the 13 workload patterns: suffix array, then FM-index, then `str.find`, then the naive scan, then KMP. It is not the order of every pattern. On the long slice that starts "hd[24486]", `str.find` has a median of 0.536 milliseconds and the FM-index count has 0.700 milliseconds. On "Invalid user" the naive scan (0.523 milliseconds) beats `str.find` (1.957 milliseconds), which fits a rare first byte. KMP is a pure Python loop over every byte. The naive scan and `str.find` do the heavy skipping in C. A slow KMP time here is partly the interpreter. I will not treat it as a property of the 1977 algorithm. "Failed password", with 15,385 hits on this prefix, still has an FM-index median of 0.130 milliseconds, next to the 0.103 millisecond figure in Table 5.
 
-Break even against `str.find`, using the median build and the same median of medians, is blank at 2,000 lines because the FM-index count (0.139 milliseconds) is slower than `str.find` (0.0866 milliseconds). At 10,000 lines the build pays for itself after 2,620 count queries. At 50,000 lines the figure is 2,828 queries. Both quotients are in `results/breakeven.csv`.
+Break even against `str.find`, using the median build and the same median of medians, is blank at 2,000 lines because the FM-index count (0.112 milliseconds) is slower than `str.find` (0.0683 milliseconds). At 10,000 lines the build pays for itself after 3,741 count queries. At 50,000 lines the figure is 4,237 queries. Both quotients are in `results/breakeven.csv`.
 
-Locate, for the pattern "error" with 47 hits on the 2,000 line prefix, rises with the sample rate and the sample shrinks. At k = 4 the median locate is 1.62 milliseconds and the samples are 892,896 bytes. At k = 64 the median locate is 13.1 milliseconds and the samples are 55,824 bytes. The steps in between are in `results/sample_rate_memory.csv`. This curve is the Week 14 answer to question 3. It is not yet the curve on the 50,000 line prefix.
+Locate, for the pattern "error" with 47 hits on the 2,000 line prefix, rises with the sample rate and the sample shrinks. At k = 4 the median locate is 2.38 milliseconds and the samples are 892,896 bytes. At k = 64 the median locate is 14.4 milliseconds and the samples are 55,824 bytes. The steps in between are in `results/sample_rate_memory.csv`. This curve is the Week 14 answer to question 3. It is not yet the curve on the 50,000 line prefix.
 
-For many patterns on the 2,000 line prefix, repeated FM-index counts are the fastest query and Aho-Corasick is the fastest way to answer once. At 100 patterns the Aho-Corasick median is 0.0250 seconds and the repeated FM-index counts are 0.00875 seconds, but the build median is 0.170 seconds. One batch is cheaper with the automaton. Dividing that build by the gap between the two query medians gives about 10.5 batches, so the index is ahead from the 11th batch of 100 patterns. Repeated KMP at 100 patterns takes a median of 0.537 seconds, which is the pure Python loop again.
+For many patterns on the 2,000 line prefix, repeated FM-index counts are the fastest query and Aho-Corasick is the fastest way to answer once. At 100 patterns the Aho-Corasick median is 0.0335 seconds and the repeated FM-index counts are 0.00731 seconds, but the build median is 0.178 seconds. One batch is cheaper with the automaton. Dividing that build by the gap between the two query medians gives about 6.8 batches, so the index is ahead from the 7th batch of 100 patterns. Repeated KMP at 100 patterns takes a median of 1.043 seconds, which is the pure Python loop again.
 
 The Count-Min sketch, on the 50,000 line prefix, saw 124 distinct IPv4 addresses and 47,320 updates. The exact counter occupies 13,912 bytes. A width 64, depth 4 sketch occupies 2,048 bytes and its worst overestimate is 4,827 counts. A width 1,024 sketch occupies 32,768 bytes, which is more than the exact counter, and the worst overestimate is still 379. On this address set the exact counter is the better default. The sketch is the tool for a key set that does not fit, which this log does not have.
 
@@ -179,7 +179,7 @@ Table 6. Risks I am already budgeting for.
 | Python memory on a long log | Cap the prefix. Store the suffix array and the bit vectors in numpy, not in lists of objects, except when the space experiment is measuring that list on purpose. |
 | Build time | Keep Week 14 at 50,000 lines. Replace the doubling sort in Week 15 before the 20 MB prefixes. |
 | Dataset download | Commit the 2,000 line samples. The download script checks MD5 and SHA 256 against the Zenodo record and the copies I hashed. |
-| A number that came from the wrong machine | `environment.json` names the machine. Rerunning on my PC means regenerating the CSV files and the tables. |
+| A number that came from the wrong machine | `environment.json` names this Windows 11 PC. These tables match that file. Another machine means regenerating the CSV files and the tables. |
 
 ## 8. Limitations and what I expect to contribute
 
@@ -187,11 +187,11 @@ The limitations are the ones Amakobe (2026, sec. 15.5) asks a project to name, a
 
 Internal validity. The collector is off during timed calls, and there is a warmup, but the CPU frequency is not pinned and the file cache is warm after the first build. KMP and the FM-index walk are pure Python, while `str.find` and the naive scan's first byte skip are C. Part of Table 5 is the interpreter. I say so next to the table.
 
-External validity. One virtual machine, one family of logs, and prefixes that stop at about 5.6 MB. A Windows PC, a different log, or a 20 MB prefix can move the constants. The ordering might survive. I will not claim that until I measure it.
+External validity. One Windows 11 PC, one family of logs, and prefixes that stop at 5,561,038 bytes. Another PC, another log, or a 20 MB prefix can move the constants. The ordering I report is the one I measured here.
 
 Construct validity. Count latency is not locate latency, and locate is what an analyst feels when the tool prints lines. I measured locate on one pattern and one small prefix. Space in bytes is not space in theoretical bits. I report both, because they answer different questions.
 
-Conclusion validity. Five trials is enough to see that the build times are stable. The standard deviation on the 50,000 line build is 0.081 seconds around a mean of 6.25 seconds. It is not enough to make a fine claim about two methods whose times sit within a few microseconds. I use the median and the IQR so one slow trial does not write the sentence.
+Conclusion validity. Five trials show the build spread. The standard deviation on the 50,000 line build is 0.205 seconds around a mean of 7.948 seconds. The interquartile range on that build is 0.329 seconds. I use the median and that range so one slow trial does not write the sentence. It is not enough to make a fine claim about two methods whose times sit within a few microseconds.
 
 What I expect to contribute is a working FM-index in Python, tied to real authentication logs, with the scans and the suffix array measured beside it under a fixed seed. The early evidence is that the index already beats a scan on count time once the log is past a few thousand lines, that it does not beat suffix array binary search on query time, that it is smaller than a Python suffix array and only somewhat smaller than an int32 one, and that a single watch list pass still belongs to Aho-Corasick. The rest of the term is there to test whether those sentences survive longer logs and a faster build.
 
