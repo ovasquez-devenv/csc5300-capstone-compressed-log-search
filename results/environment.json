@@ -1,18 +1,18 @@
 {
-  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
-  "python_version": "3.12.3",
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "python_version": "3.14.7",
   "implementation": "CPython",
-  "os": "Linux-6.12.113+-x86_64-with-glibc2.39",
-  "system": "Linux",
-  "machine": "x86_64",
-  "processor": "x86_64",
-  "cpu": "Intel(R) Xeon(R) Processor",
-  "cpu_count": 4,
-  "ram_bytes": 16780623872,
-  "hostname": "cursor",
+  "os": "Windows-11-10.0.26200-SP0",
+  "system": "Windows",
+  "machine": "AMD64",
+  "processor": "AMD64 Family 26 Model 104 Stepping 0, AuthenticAMD",
+  "cpu": null,
+  "cpu_count": 12,
+  "ram_bytes": null,
+  "hostname": "ODIS_LLC",
   "numpy": "2.5.5",
-  "git_commit": "ec2004087526eb2ac9304ad10a45a65703b96240",
-  "git_dirty": false,
+  "git_commit": "b256467a0834afc261c2eda2dabeece74c9efb43",
+  "git_dirty": true,
   "seed": 5300,
   "repeats": 5,
   "warmup": 1,
@@ -26,20 +26,20 @@
     50000
   ],
   "loglog_fit": {
-    "fm_total_loglog_slope": 1.1213086499933818,
-    "fm_total_loglog_intercept": -15.606076215701833,
+    "fm_total_loglog_slope": 1.1786026807241328,
+    "fm_total_loglog_intercept": -16.261442895432523,
     "points": [
       {
         "text_bytes": 223218,
-        "median_seconds": 0.16958082900009686
+        "median_seconds": 0.17761460000474472
       },
       {
         "text_bytes": 1098049,
-        "median_seconds": 0.9485745150000184
+        "median_seconds": 1.1014437999983784
       },
       {
         "text_bytes": 5561038,
-        "median_seconds": 6.237819065999929
+        "median_seconds": 7.855477099998097
       }
     ]
   },
